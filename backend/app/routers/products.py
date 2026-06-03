@@ -15,7 +15,7 @@ router = APIRouter()
 
 # Temporary in-memory storage
 # Will be removed once all CRUD uses PostgreSQL
-products = []
+
 
 
 # Get products from temporary list
@@ -36,11 +36,18 @@ def get_products_from_db(db: Session = Depends(get_db)):
 
 # Get one product by index from temporary list
 @router.get("/{product_id}")
-def get_product(product_id: int):
+def get_product(product_id: int, db: Session = Depends(get_db)):
 
-    if product_id < len(products):
+    product =  db.query(Product).filter(Product.id == product_id).first()
 
-        return products[product_id]
+    if product:
+
+
+        return{
+            "id": product.id,
+            "name": product.name,
+            "price": product.price,
+        }
 
     return {
         "error": "Product not found"
@@ -49,19 +56,20 @@ def get_product(product_id: int):
 
 # Delete product from temporary list
 @router.delete("/{product_id}")
-def delete_product(product_id: int):
+def delete_product(product_id: int, db: Session = Depends(get_db)):
 
-    if product_id < len(products):
+    product = db.query(Product).filter(Product.id == product_id).first()
 
-        deleted_product = products.pop(product_id)
-
+    if not product:
         return {
-            "message": "Product deleted",
-            "deleted_product": deleted_product
+            "error": "Product not found"
         }
+    
+    db.delete(product)
+    db.commit()
 
-    return {
-        "error": "Product not found"
+    return{
+        "message": "product deleted successfully"
     }
 
 
@@ -69,20 +77,37 @@ def delete_product(product_id: int):
 @router.put("/{product_id}")
 def update_product(
     product_id: int,
-    product: ProductSchema
+    updated_product: ProductSchema,
+    db: Session =  Depends(get_db)
 ):
 
-    if product_id < len(products):
+    product = db.query(Product).filter(
+        Product.id == product_id
+    ).first()
 
-        products[product_id] = product.model_dump()
+    if not product:
 
-        return {
-            "message": "Product updated",
-            "product": products[product_id]
+        return{
+            "error": "product not found"
         }
+    
+    #Update fields
+    product.name = updated_product.name
+    product.price = updated_product.price
 
-    return {
-        "error": "Product not found"
+    #save changes
+    db.commit()
+
+    #Reload updated data
+    db.refresh(product)
+
+    return{
+        "message": "Product updated",
+        "product": {
+            "id": product.id,
+            "name": product.name,
+            "price": product.price
+        }
     }
 
 
