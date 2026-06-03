@@ -1,12 +1,20 @@
 from pydantic import BaseModel
 
 
-# Pydantic schema
-# Used for validating incoming API requests
-class Product(BaseModel):
-
-    # Product name
+# Base schema
+class ProductBase(BaseModel):
     name: str
-
-    # Product price
     price: float
+
+
+# Used when creating a product
+class ProductCreate(ProductBase):
+    pass
+
+
+# Used when returning product data
+class ProductResponse(ProductBase):
+    id: int
+
+    class Config:
+        from_attributes = True

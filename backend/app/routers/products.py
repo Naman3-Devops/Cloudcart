@@ -8,7 +8,7 @@ from app.database import get_db
 from app.models.product import Product
 
 # Pydantic schema for request validation
-from app.schemas.product import Product as ProductSchema
+from app.schemas.product import(ProductCreate, ProductResponse)
 
 # Create router object
 router = APIRouter()
@@ -19,10 +19,10 @@ router = APIRouter()
 
 
 # Get products from temporary list
-@router.get("/")
+@router.get("/", response_model=list[ProductResponse])
 def get_products(limit: int = 10, db: Session =  Depends(get_db)):
 
-    products = db.query(Product).all()
+    products = db.query(Product).limit(limit).all()  
 
     return products
 
@@ -37,7 +37,7 @@ def get_products_from_db(db: Session = Depends(get_db)):
 
 
 # Get one product by index from temporary list
-@router.get("/{product_id}")
+@router.get("/{product_id}", response_model=ProductResponse)
 def get_product(product_id: int, db: Session = Depends(get_db)):
 
     product = db.query(Product).filter(Product.id == product_id).first()
@@ -48,12 +48,7 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
             detail="product not found"
         )
 
-    return {
-        "id": product.id,
-        "name": product.name,
-        "price": product.price,
-    }
-
+    return product
 
 # Delete product from temporary list
 @router.delete("/{product_id}")
@@ -76,10 +71,10 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
 
 
 # Update product in temporary list
-@router.put("/{product_id}")
+@router.put("/{product_id}", response_model=ProductResponse)
 def update_product(
     product_id: int,
-    updated_product: ProductSchema,
+    updated_product: ProductCreate,
     db: Session =  Depends(get_db)
 ):
 
@@ -106,19 +101,11 @@ def update_product(
     #Reload updated data
     db.refresh(product)
 
-    return{
-        "message": "Product updated",
-        "product": {
-            "id": product.id,
-            "name": product.name,
-            "price": product.price
-        }
-    }
-
+    return product
 
 # Create product in temporary list
-@router.post("/")
-def create_product(product: ProductSchema, db: Session = Depends(get_db)):
+@router.post("/", response_model=ProductResponse)
+def create_product(product: ProductCreate, db: Session = Depends(get_db)):
 
     #Create SQLAlchemy product object
     new_product = Product(
@@ -136,12 +123,5 @@ def create_product(product: ProductSchema, db: Session = Depends(get_db)):
     db.refresh(new_product)
 
 
-    return {
-        "message": "Product created",
-        "product": {
-            "id": new_product.id,
-            "name": new_product.name,
-            "price": new_product.price,
-            
-        }
-    }
+    return  new_product
+    
