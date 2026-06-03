@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 # PostgreSQL connection string
 # Format:
 # postgresql://username:password@host:port/database_name
-DATABASE_URL = "postgresql://postgres:YOUR_PASSWORD@localhost:5432/cloudcart"
+DATABASE_URL = "postgresql://postgres:Cloudcart123@localhost:5432/cloudcart"
 
 # Creates the connection engine that talks to PostgreSQL
 engine = create_engine(DATABASE_URL)

@@ -88,11 +88,30 @@ def update_product(
 
 # Create product in temporary list
 @router.post("/")
-def create_product(product: ProductSchema):
+def create_product(product: ProductSchema, db: Session = Depends(get_db)):
 
-    products.append(product.model_dump())
+    #Create SQLAlchemy product object
+    new_product = Product(
+        name=product.name,
+        price=product.price,
+    )
+
+    #add product to session
+    db.add(new_product)
+
+    #save to PostgreSQL
+    db.commit()
+
+    #Refresh object to get generated ID
+    db.refresh(new_product)
+
 
     return {
         "message": "Product created",
-        "products": products
+        "product": {
+            "id": new_product.id,
+            "name": new_product.name,
+            "price": new_product.price,
+            
+        }
     }
