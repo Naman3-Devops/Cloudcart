@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 # Database dependency
@@ -20,9 +20,11 @@ router = APIRouter()
 
 # Get products from temporary list
 @router.get("/")
-def get_products(limit: int = 10):
+def get_products(limit: int = 10, db: Session =  Depends(get_db)):
 
-    return products[:limit]
+    products = db.query(Product).all()
+
+    return products
 
 
 # Get all products from PostgreSQL
@@ -38,19 +40,18 @@ def get_products_from_db(db: Session = Depends(get_db)):
 @router.get("/{product_id}")
 def get_product(product_id: int, db: Session = Depends(get_db)):
 
-    product =  db.query(Product).filter(Product.id == product_id).first()
+    product = db.query(Product).filter(Product.id == product_id).first()
 
-    if product:
-
-
-        return{
-            "id": product.id,
-            "name": product.name,
-            "price": product.price,
-        }
+    if not product:
+        raise HTTPException(
+            status_code=404,
+            detail="product not found"
+        )
 
     return {
-        "error": "Product not found"
+        "id": product.id,
+        "name": product.name,
+        "price": product.price,
     }
 
 
@@ -61,9 +62,10 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
     product = db.query(Product).filter(Product.id == product_id).first()
 
     if not product:
-        return {
-            "error": "Product not found"
-        }
+        raise HTTPException(
+            status_code=404,
+            detail="product not found"
+        )
     
     db.delete(product)
     db.commit()
@@ -87,9 +89,12 @@ def update_product(
 
     if not product:
 
-        return{
-            "error": "product not found"
-        }
+        raise HTTPException(
+            status_code=404,
+            detail="product not found"
+        )
+    
+
     
     #Update fields
     product.name = updated_product.name
