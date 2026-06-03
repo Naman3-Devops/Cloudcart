@@ -1,29 +1,31 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from dotenv import load_dotenv
+import os
 
-# PostgreSQL connection string
-# Format:
-# postgresql://username:password@host:port/database_name
-DATABASE_URL = "postgresql://postgres:Cloudcart123@localhost:5432/cloudcart"
+# Load environment variables
+load_dotenv(override=False)
 
-# Creates the connection engine that talks to PostgreSQL
+# Get DATABASE_URL
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# Print for debugging
+print("DATABASE_URL =", DATABASE_URL)
+
+# Create SQLAlchemy engine
 engine = create_engine(DATABASE_URL)
 
-# Creates database sessions
-# A session is a temporary conversation between FastAPI and PostgreSQL
+# Create database sessions
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
     bind=engine
 )
 
-# Parent class for all database models
+# Base model class
 Base = declarative_base()
 
 
-# Dependency used by FastAPI
-# Creates a session for every request
-# Closes it automatically when request finishes
 def get_db():
     db = SessionLocal()
 

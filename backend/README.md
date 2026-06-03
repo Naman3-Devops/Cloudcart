@@ -144,6 +144,28 @@ This project is being built from scratch while learning:
 * CI/CD Pipeline
 * React Frontend
 
+
+
+## Run with Docker
+
+Build image:
+
+```bash
+docker build -t cloudcart .
+```
+
+Run container:
+
+```bash
+docker run -p 8000:8000 \
+-e DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@host.docker.internal:5432/cloudcart" \
+cloudcart
+```
+
+Open:
+
+http://localhost:8000/docs
+
 ---
 
 ## Author
