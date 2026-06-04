@@ -18,4 +18,7 @@ class Product(Base):
 
     # Product price
     price = Column(Float)
+
+
+    description = Column(String, nullable=True)
     
