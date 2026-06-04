@@ -1,4 +1,5 @@
 name: CloudCart CI
+
 on:
   push:
     branches:
@@ -13,24 +14,27 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: backend
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.13"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
 
-    - name: Install Dependencies
-      run: |
-        python install -r requirements.txt
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
 
-    - name: Verify Imports
-      run: |
-        python -c "from app.main import app; print('FastAPI app loaded successfully')"
-    
-    - name: Build Docker Image
-      run: |
-        docker build -t cloudcart .
+      - name: Verify Imports
+        run: |
+          python -c "from app.main import app; print('FastAPI app loaded successfully')"
 
+      - name: Build Docker Image
+        run: |
+          docker build -t cloudcart .
