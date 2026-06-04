@@ -1,7 +1,16 @@
 from fastapi import FastAPI
 
+# Database imports
+from app.database import Base, engine
+
+# Import model so SQLAlchemy can detect it
+from app.models.product import Product
+
 # Import product routes
 from app.routers import products
+
+# Create all tables if they don't exist
+Base.metadata.create_all(bind=engine)
 
 # Create FastAPI application
 app = FastAPI()
@@ -17,7 +26,6 @@ def home():
 
 
 # Register product routes
-# All routes inside products.py will start with /products
 app.include_router(
     products.router,
     prefix="/products",

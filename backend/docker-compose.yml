@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: postgres:17
+    container_name: cloudcart_db
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Cloudcart123
+      POSTGRES_DB: cloudcart
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+      build: .
+
+      container_name: cloudcart_api
+
+      ports:
+        - "8000:8000"
+
+      environment:
+        DATABASE_URL: postgresql://postgres:Cloudcart123@db:5432/cloudcart
+
+      depends_on:
+        - db
+
+volumes:
+  postgres_data:
+  
