@@ -104,7 +104,7 @@ def update_product(
     return product
 
 # Create product in temporary list
-@router.post("/", response_model=ProductResponse)
+@router.post("/db", response_model=ProductResponse)
 def create_product(product: ProductCreate, db: Session = Depends(get_db)):
 
     #Create SQLAlchemy product object
