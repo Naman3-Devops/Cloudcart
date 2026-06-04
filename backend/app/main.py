@@ -10,6 +10,12 @@ from app.models.product import Product
 from app.routers import products
 
 # Create all tables if they don't exist
+# Automatically creates tables if they don't exist
+#
+# Good for learning projects
+#
+# In production environments, Alembic migrations
+# should be used instead of create_all()
 Base.metadata.create_all(bind=engine)
 
 # Create FastAPI application

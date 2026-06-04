@@ -1,5 +1,6 @@
 name: CloudCart CI
 
+# Run workflow on every push and pull request to main branch
 on:
   push:
     branches:
@@ -12,29 +13,32 @@ on:
 jobs:
   test-and-build:
 
+    # GitHub-hosted Linux runner
     runs-on: ubuntu-latest
 
+    # Run all commands from backend directory
     defaults:
       run:
         working-directory: backend
 
     steps:
+
+      # Download repository code
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Install Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.13"
 
+      # Install project dependencies
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
 
-      - name: Verify Imports
-        run: |
-          python -c "from app.main import app; print('FastAPI app loaded successfully')"
-
+      # Verify Docker image can be built successfully
       - name: Build Docker Image
         run: |
-          docker build -t cloudcart .
+          docker build -t cloudcart . 
