@@ -16,7 +16,11 @@ from app.routers import products
 #
 # In production environments, Alembic migrations
 # should be used instead of create_all()
-Base.metadata.create_all(bind=engine)
+
+print("MAIN.PY VERSION 4 LOADED")
+
+if engine:
+    Base.metadata.create_all(bind=engine)
 
 # Create FastAPI application
 app = FastAPI()

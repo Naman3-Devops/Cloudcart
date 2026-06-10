@@ -11,6 +11,10 @@ load_dotenv(override=False)
 # Read DATABASE_URL from environment variables
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+print("DATABASE_URL =", DATABASE_URL) 
+
+
+
 # Create SQLAlchemy engine only if DATABASE_URL exists
 #
 # Why?
